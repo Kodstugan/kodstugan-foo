@@ -1,0 +1,73 @@
+
+html, body {
+  width:  100%; /* we must set both width and height to 100%, because % always uses the parent, it inherits. */
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+slider {
+  display: block;
+  width:    100%;
+  height:   100%;
+  overflow: hidden;
+  position: absolute;
+  background-color: chartreuse;
+  /*
+  overflow: hidden - this make sure that we wont get a scroll because of content being bigger than the screen, if you
+  temporarily remove this you'll see a vertical scroll.
+  */
+}
+
+slider > * {
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  animation: slide 40s infinite;
+  margin:             0;
+  padding:            0;
+  background: aquamarine;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing:    border-box;
+  box-sizing:         border-box;
+  /* border-box - lets the element using for example padding to keep it's width and not expand. */
+}
+
+slide:nth-child(1) {
+  animation-delay: 0s;
+  background-image: url(../images/avanzaTv.jpg);
+  background-size: cover;
+  background-position: center;
+}
+slide:nth-child(2) {
+  animation-delay: 10s;
+  background-image: url(../images/valtechAfton.jpg);
+  background-size: cover;
+  background-position: center;
+}
+slide:nth-child(3) {
+  animation-delay: 20s;
+  background-image: url(../images/grill.jpg);
+  background-size: cover;
+  background-position: center;
+}
+slide:nth-child(4) {
+  animation-delay: 30s;
+  background-image: url(../images/JesperSaxer.jpeg);
+  background-size: cover;
+  background-position: center;
+}
+
+
+@keyframes slide {
+
+  0% {left: 100%; width: 100%;}
+  5% {left: 0;}
+  25% {left: 0;}
+  30% {left: -100%; width: 100%;}
+  30.0001% {left: -100%; width: 0;}
+  100% {left: 100%; width: 0;}
+
+}
