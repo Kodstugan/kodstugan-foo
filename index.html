@@ -1,13 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Foo</title>
-
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.15/dist/vue.js" defer></script>
-
+  <meta charset="UTF-8">
+  <title>Foo</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.15/dist/vue.js" defer></script>
+  <script src="assets/js/app.js" defer></script>
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="assets/css/app.css">
 </head>
 <body>
-
+  <div class="slides" id="app" v-bind:style="{ width: slides_width }">
+    <div class="slide" v-for="entry in entries" v-bind:style="{ width: slide_width }">
+      <h3 class="title">{{ entry.title }}</h3>
+      <ul class="meta">
+        <li class="published">Publicerad: {{ entry.published }}</li>
+        <li class="updated">Uppdaterad: {{ entry.updated }}</li>
+      </ul>
+      <div class="wrapper">
+        <div class="content" v-html="entry.content"></div>
+      </div>
+    </div>
+  </div>
+  <div class="bar"></div>
+  <h4 class="more">Läs mer på www.datavetenskap.nu</h4>
 </body>
 </html>
