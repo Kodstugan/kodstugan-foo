@@ -37,7 +37,7 @@ request.onreadystatechange = function() {
     // Clear Vue data.
     app.entries = []
 
-    // Populate the array with the 10 latest entries.
+    // Populate the array with AMOUNT_ENTRIES latest entries.
     for(i = 0; i < AMOUNT_ENTRIES; i++){
       let title = entries[i].getElementsByTagName('title')[0].innerHTML;
       let content = entries[i].getElementsByTagName('content')[0].innerHTML;
@@ -92,7 +92,6 @@ const wrapper = document.getElementsByClassName('slides')[0];
 const bar = document.getElementsByClassName('bar')[0];
 
 let i = 0;
-let j = 0;
 
 setInterval(function(){
   wrapper.style.transform = "translateX(-" + i + "%)";
