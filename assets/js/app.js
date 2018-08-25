@@ -1,4 +1,4 @@
-const URL = 'http://www.datavetenskap.nu/feeds/all.atom.xml'
+const URL = 'https://www.datavetenskap.nu/feeds/all.atom.xml'
 const SLIDE_INTERVAL = 10;  // seconds
 const SLIDE_WIDTH    = 50;  // percentage
 const FETCH_INTERVAL = 900; // seconds
