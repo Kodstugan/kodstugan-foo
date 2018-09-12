@@ -1,5 +1,5 @@
 const URL = 'https://www.datavetenskap.nu/feeds/all.atom.xml'
-const SLIDE_INTERVAL = 10;  // seconds
+const SLIDE_INTERVAL = 120;  // seconds
 const SLIDE_WIDTH    = 50;  // percentage
 const FETCH_INTERVAL = 900; // seconds
 const AMOUNT_ENTRIES = 10;
