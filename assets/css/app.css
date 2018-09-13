@@ -118,24 +118,12 @@ small, .font_small {
 }
 
 .bar {
-  width:                     0;
-  height:                    5px;
-  background:                #A71D31;
-  position:                  absolute;
-  left:                      0;
-  top:                       0;
-  animation-name:            animate;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;
-}
-
-@keyframes animate {
-  0% {
-    width: 0%;
-  }
-  100% {
-    width: 100%;
-  }
+  width:      0;
+  height:     5px;
+  background: #A71D31;
+  position:   absolute;
+  left:       0;
+  top:        0;
 }
 
 .more {
@@ -168,4 +156,20 @@ small, .font_small {
 
 .images img {
   width: 100%;
+}
+
+.overlay {
+  width:              100%;
+  height:             100%;
+  background:         #000;
+  z-index:            999;
+  position:           absolute;
+  top:                0;
+  left:               0;
+  opacity:            0;
+  -webkit-transition: opacity 0.5s ease;
+  -moz-transition:    opacity 0.5s ease;
+  -ms-transition:     opacity 0.5s ease;
+  -o-transition:      opacity 0.5s ease;
+  transition:         opacity 0.5s ease;
 }
