@@ -10,6 +10,7 @@
 </head>
 <body>
 <div id="app">
+  <div class="clock"> {{ time }}</div>
   <div v-if="stage === 0" class="slides" v-bind:style="{ width: slides_width }">
     <div class="slide" v-for="entry in entries" v-bind:style="{ width: slide_width }">
       <h3 class="title">{{ entry.title }}</h3>

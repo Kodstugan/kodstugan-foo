@@ -13,6 +13,7 @@ let app = new Vue({
         images_css_width: 0,
         image_css_width : 0
       },
+      time        : '',
       id          : -1,
       active      : false,
       stage       : 0,
@@ -106,50 +107,29 @@ let app = new Vue({
           {
             const bar = document.getElementsByClassName('bar')[0];
 
-            if (app.stage === 1)
+            let element = self.stage === 0 ? 'slides' : 'images';
+            let wrapper = document.getElementsByClassName(element)[0];
+            let stage = self.stage === 0 ? 1 : 0;
+
+            self.showOverlay();
+
+            setTimeout(function ()
             {
-              self.showOverlay();
+              app.stage = stage;
+              clearInterval(self.id);
+            }, 500);
 
-              setTimeout(function ()
-              {
-                app.stage = 0;
-                clearInterval(self.id);
-              }, 500);
-
-              setTimeout(function ()
-              {
-                document.getElementsByClassName('slides')[0].style.transform = 'translate3D(0, 0, 0)';
-              }, 600);
-
-              setTimeout(function ()
-              {
-                self.hideOverlay();
-                self.startSlide();
-                self.startLoad(bar);
-              }, 1100);
-            }
-            else
+            setTimeout(function ()
             {
-              self.showOverlay();
+              wrapper.style.transform = 'translate3D(0, 0, 0)';
+            }, 600);
 
-              setTimeout(function ()
-              {
-                app.stage = 1;
-                clearInterval(self.id);
-              }, 500);
-
-              setTimeout(function ()
-              {
-                document.getElementsByClassName('images')[0].style.transform = 'translate3D(0, 0, 0)';
-              }, 600);
-
-              setTimeout(function ()
-              {
-                self.hideOverlay();
-                self.startSlide();
-                self.startLoad(bar);
-              }, 1100);
-            }
+            setTimeout(function ()
+            {
+              self.hideOverlay();
+              self.startSlide();
+              self.startLoad(bar);
+            }, 1100);
           }, self.settings.stage_interval * 1000);
 
           self.active = true;
@@ -158,9 +138,21 @@ let app = new Vue({
 
       request.open('GET', this.settings.url);
       request.send();
+
+      this.updateClock();
+
+      setInterval(function ()
+      {
+        self.updateClock();
+      }, 60 * 1000);
     }
     ,
     methods: {
+      updateClock  : function ()
+      {
+        let current = new Date();
+        this.time = (current.getHours() + ':' + current.getMinutes());
+      },
       convertToHTML: function (message)
       {
         return message
@@ -202,42 +194,25 @@ let app = new Vue({
         const bar = document.getElementsByClassName('bar')[0];
 
         let i = 0;
-        let j = 0;
 
         this.id = setInterval(function ()
         {
-          if (self.stage === 0)
+          let element = self.stage === 0 ? 'slides' : 'images';
+          let increment = self.stage === 0 ? self.settings.slide_css_width : self.settings.image_css_width;
+
+          let wrapper = document.getElementsByClassName(element)[0];
+          self.startLoad(bar);
+
+          if (i >= 100 - increment)
           {
-            let wrapper = document.getElementsByClassName('slides')[0];
-            self.startLoad(bar);
-
-            if (i >= 100 - self.settings.slide_css_width)
-            {
-              i = 0;
-            }
-            else
-            {
-              i += self.settings.slide_css_width;
-            }
-
-            wrapper.style.transform = 'translate3D(-' + i + '%, 0, 0)';
+            i = 0;
           }
           else
           {
-            let images = document.getElementsByClassName('images')[0];
-            self.startLoad(bar);
-
-            if (j >= 100 - self.settings.image_css_width)
-            {
-              j = 0;
-            }
-            else
-            {
-              j += self.settings.image_css_width;
-            }
-
-            images.style.transform = 'translate3D(-' + j + '%, 0, 0)';
+            i += increment;
           }
+
+          wrapper.style.transform = 'translate3D(-' + i + '%, 0, 0)';
         }, self.settings.slide_interval * 1000);
       }
     }

@@ -173,3 +173,14 @@ small, .font_small {
   -o-transition:      opacity 0.5s ease;
   transition:         opacity 0.5s ease;
 }
+
+.clock {
+  position:   absolute;
+  color:      #fff;
+  padding:    0 10px;
+  font-size:  50px;
+  top:        40px;
+  right:      40px;
+  background: rgba(0, 0, 0, 0.5);
+  z-index:    999;
+}
