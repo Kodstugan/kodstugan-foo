@@ -1,108 +1,221 @@
-const URL = 'https://www.datavetenskap.nu/feeds/all.atom.xml'
-const SLIDE_INTERVAL = 120;  // seconds
-const SLIDE_WIDTH    = 50;  // percentage
-const FETCH_INTERVAL = 900; // seconds
-const AMOUNT_ENTRIES = 10;
+let app = new Vue({
+    el     : '#app',
+    data   : {
+      settings    : {
+        url             : 'https://www.datavetenskap.nu/feeds/all.atom.xml',
+        stage_interval  : 900,
+        slide_interval  : 60,
+        slide_width     : 50,
+        fetch_interval  : 1800,
+        amount_entries  : 10,
+        slides_css_width: 0,
+        slide_css_width : 0,
+        images_css_width: 0,
+        image_css_width : 0
+      },
+      time        : '',
+      id          : -1,
+      active      : false,
+      stage       : 0,
+      slides_width: 0,
+      slide_width : 0,
+      images_width: 0,
+      image_width : 0,
+      entries     : [],
+      images      :
+        [
+          'https://foo.kodstugan.io/images/1.jpg',
+          'https://foo.kodstugan.io/images/2.jpg'
+        ]
+    },
+    mounted: function ()
+    {
+      this.settings.slides_css_width = this.settings.amount_entries * this.settings.slide_width;
+      this.settings.slide_css_width = ((this.settings.slides_css_width / this.settings.amount_entries) /
+        this.settings.slides_css_width) * 100;
 
-// Don't change these.
-const SLIDES_CSS_WIDTH = AMOUNT_ENTRIES * SLIDE_WIDTH;
-const SLIDE_CSS_WIDTH  = ((SLIDES_CSS_WIDTH/AMOUNT_ENTRIES) / SLIDES_CSS_WIDTH) * 100;
+      this.slides_width = this.settings.slides_css_width + '%';
+      this.slide_width = this.settings.slide_css_width + '%';
 
-// Vue -------------------------------------------------------------------------
+      this.settings.images_css_width = this.images.length * 100;
+      this.settings.image_css_width = ((this.settings.images_css_width / this.images.length) /
+        this.settings.images_css_width) * 100;
 
-// Initialize a new Vue instance.
-var app = new Vue({
-  el: '#app',
-  data: {
-    slides_width: 0,
-    slide_width: 0,
-    entries: []
-  }
-})
+      this.images_width = this.settings.images_css_width + '%';
+      this.image_width = this.settings.image_css_width + '%';
 
-// XML fetch -------------------------------------------------------------------
+      const self = this;
+      const request = new XMLHttpRequest();
 
-// Create a new XML request handler.
-const request = new XMLHttpRequest();
+      request.onreadystatechange = function ()
+      {
+        if (this.readyState === 4 && this.status === 200)
+        {
+          // Parse the response.
+          const parser = new DOMParser();
+          const xml = parser.parseFromString(this.responseText, 'text/xml');
 
-request.onreadystatechange = function() {
-  if (this.readyState == 4 && this.status == 200) {
-    // Parse the response.
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(this.responseText,"text/xml");
+          // Get all entries.
+          const entries = xml.getElementsByTagName('entry');
 
-    // Get all entries.
-    const entries = xml.getElementsByTagName('entry');
+          // Clear Vue data.
+          self.entries = [];
 
-    // Clear Vue data.
-    app.entries = []
+          // Populate the array with AMOUNT_ENTRIES latest entries.
+          for (let i = 0; i < self.settings.amount_entries; i++)
+          {
+            let title = entries[i].getElementsByTagName('title')[0].innerHTML;
+            let content = entries[i].getElementsByTagName('content')[0].innerHTML;
+            let published = entries[i].getElementsByTagName('published')[0].innerHTML;
+            let updated = entries[i].getElementsByTagName('updated')[0].innerHTML;
 
-    // Populate the array with AMOUNT_ENTRIES latest entries.
-    for(i = 0; i < AMOUNT_ENTRIES; i++){
-      let title = entries[i].getElementsByTagName('title')[0].innerHTML;
-      let content = entries[i].getElementsByTagName('content')[0].innerHTML;
-      let published = entries[i].getElementsByTagName('published')[0].innerHTML;
-      let updated = entries[i].getElementsByTagName('updated')[0].innerHTML;
+            // XML feed content is using &lt, &gt, &amp instead of correct HTML tags.
+            title = self.convertToHTML(title);
+            content = self.convertToHTML(content);
 
-      // XML feed content is using &lt, &gt, &amp instead of correct HTML tags.
-      title = convertToHTML(title);
-      content = convertToHTML(content);
+            // Convert to correct date format.
+            published = new Date(published).toLocaleDateString('sv-SE').toString();
+            updated = new Date(published).toLocaleDateString('sv-SE').toString();
 
-      // Convert to correct date format.
-      published = new Date(published).toLocaleDateString('sv-SE').toString();
-      updated = new Date(published).toLocaleDateString('sv-SE').toString();
+            const entry = {
+              title    : title,
+              published: published,
+              updated  : updated,
+              content  : content
+            };
 
-      const entry = {
-        title: title,
-        published: published,
-        updated: updated,
-        content: content
-      }
+            self.entries.push(entry);
+          }
 
-      app.entries.push(entry);
+          if (self.active)
+          {
+            return;
+          }
+
+          const bar = document.getElementsByClassName('bar')[0];
+
+          self.startSlide();
+          self.startLoad(bar);
+
+          setInterval(function ()
+          {
+            request.open('GET', self.settings.url);
+            request.send();
+          }, self.settings.fetch_interval * 1000);
+
+          setInterval(function ()
+          {
+            const bar = document.getElementsByClassName('bar')[0];
+
+            let element = self.stage === 0 ? 'slides' : 'images';
+            let wrapper = document.getElementsByClassName(element)[0];
+            let stage = self.stage === 0 ? 1 : 0;
+
+            self.showOverlay();
+
+            setTimeout(function ()
+            {
+              app.stage = stage;
+              clearInterval(self.id);
+            }, 500);
+
+            setTimeout(function ()
+            {
+              wrapper.style.transform = 'translate3D(0, 0, 0)';
+            }, 600);
+
+            setTimeout(function ()
+            {
+              self.hideOverlay();
+              self.startSlide();
+              self.startLoad(bar);
+            }, 1100);
+          }, self.settings.stage_interval * 1000);
+
+          self.active = true;
+        }
+      };
+
+      request.open('GET', this.settings.url);
+      request.send();
+
+      this.updateClock();
+
+      setInterval(function ()
+      {
+        self.updateClock();
+      }, 60 * 1000);
     }
+    ,
+    methods: {
+      updateClock  : function ()
+      {
+        let current = new Date();
+        this.time = (current.getHours() + ':' + current.getMinutes());
+      },
+      convertToHTML: function (message)
+      {
+        return message
+          .replace(/&apos;/g, '\'')
+          .replace(/&quot;/g, '"')
+          .replace(/&gt;/g, '>')
+          .replace(/&lt;/g, '<')
+          .replace(/&amp;/g, '&');
+      },
+      startLoad    : function (element)
+      {
+        const self = this;
 
-    app.slides_width = SLIDES_CSS_WIDTH + "%";
-    app.slide_width = SLIDE_CSS_WIDTH + "%";
-  }
-};
+        setTimeout(function ()
+        {
+          element.style.transition = 'none';
+          element.style.width = '0%';
 
-// Initial fetch.
-request.open('GET', URL);
-request.send();
+          setTimeout(function ()
+          {
+            element.style.transition = 'width ' + self.settings.slide_interval + 's linear';
+            element.style.width = '100%';
+          }, 50);
+        }, 50);
+      },
+      showOverlay  : function ()
+      {
+        const overlay = document.getElementsByClassName('overlay')[0];
+        overlay.style.opacity = 1;
+      },
+      hideOverlay  : function ()
+      {
+        const overlay = document.getElementsByClassName('overlay')[0];
+        overlay.style.opacity = 0;
+      },
+      startSlide   : function ()
+      {
+        const self = this;
+        const bar = document.getElementsByClassName('bar')[0];
 
-// Let's check for new entries in an interval.
-setInterval(function(){
-  request.open('GET', URL);
-  request.send();
-}, FETCH_INTERVAL * 1000);
+        let i = 0;
 
-function convertToHTML(message){
-  return message
-  .replace(/&apos;/g, "'")
-  .replace(/&quot;/g, '"')
-  .replace(/&gt;/g, '>')
-  .replace(/&lt;/g, '<')
-  .replace(/&amp;/g, '&');
-}
+        this.id = setInterval(function ()
+        {
+          let element = self.stage === 0 ? 'slides' : 'images';
+          let increment = self.stage === 0 ? self.settings.slide_css_width : self.settings.image_css_width;
 
-// Slide -----------------------------------------------------------------------
+          let wrapper = document.getElementsByClassName(element)[0];
+          self.startLoad(bar);
 
-const wrapper = document.getElementsByClassName('slides')[0];
-const bar = document.getElementsByClassName('bar')[0];
+          if (i >= 100 - increment)
+          {
+            i = 0;
+          }
+          else
+          {
+            i += increment;
+          }
 
-let i = 0;
+          wrapper.style.transform = 'translate3D(-' + i + '%, 0, 0)';
+        }, self.settings.slide_interval * 1000);
+      }
+    }
+  })
+;
 
-setInterval(function(){
-  wrapper.style.transform = "translateX(-" + i + "%)";
-
-  if(i >= 100 - SLIDE_CSS_WIDTH){
-    wrapper.style.transform = "translateX(0%)";
-    i = 0;
-  }else{
-    i += SLIDE_CSS_WIDTH;
-  }
-
-}, SLIDE_INTERVAL * 1000);
-
-bar.style.animationDuration = SLIDE_INTERVAL + "s";
