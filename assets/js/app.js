@@ -152,7 +152,9 @@ let app = new Vue({
       updateClock  : function ()
       {
         let current = new Date();
-        this.time = (current.getHours() + ':' + current.getMinutes());
+        let minutes = current.getMinutes();
+        if (minutes < 10) {minutes = '0' + minutes}
+        this.time = (current.getHours() + ':' + minutes);
       },
       convertToHTML: function (message)
       {
