@@ -63,6 +63,10 @@ let app = new Vue({
           // Clear Vue data.
           self.entries = [];
 
+          // Get todays date and set expiration constant
+          const TWO_WEEKS = (14 * 24 * 60 * 60 * 1000);
+          const today = new Date();
+          
           // Populate the array with AMOUNT_ENTRIES latest entries.
           for (let i = 0; i < self.settings.amount_entries; i++)
           {
@@ -85,8 +89,11 @@ let app = new Vue({
               updated  : updated,
               content  : content
             };
-
-            self.entries.push(entry);
+            
+            //Dont publish entries that are older than two weeks.
+            if((entry.published + TWO_WEEKS) >= today) {
+              self.entries.push(entry);
+            }
           }
 
           if (self.active)
