@@ -171,14 +171,10 @@ let app = new Vue({
         let current = new Date();
         let minutes = current.getMinutes();
         let hours = current.getHours();
-        if (minutes < 10)
-        {
-          minutes = '0' + minutes
-        }
-        if (hours < 10)
-        {
-          hours = '0' + hours
-        }
+
+        minutes = (minutes < 10) ? '0' + minutes : minutes;
+        hours = (hours < 10) ? '0' + hours : hours;
+
         this.time = (hours + ':' + minutes);
       },
       convertToHTML: function (message)
