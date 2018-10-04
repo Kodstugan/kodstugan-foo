@@ -7,7 +7,7 @@ let app = new Vue({
         slide_interval  : 60,
         slide_width     : 50,
         fetch_interval  : 1800,
-        amount_entries  : 10,
+        amount_entries  : 0,
         slides_css_width: 0,
         slide_css_width : 0,
         images_css_width: 0,
@@ -24,28 +24,14 @@ let app = new Vue({
       entries     : [],
       images      :
         [
-            'https://foo.kodstugan.io/images/2.jpg',
-            'https://foo.kodstugan.io/images/Mpya_foo.jpg',
-            'https://foo.kodstugan.io/images/wow2019.jpg'
+          'https://foo.kodstugan.io/images/2.jpg',
+          'https://foo.kodstugan.io/images/Mpya_foo.jpg',
+          'https://foo.kodstugan.io/images/wow2019.jpg'
 
         ]
     },
     mounted: function ()
     {
-      this.settings.slides_css_width = this.settings.amount_entries * this.settings.slide_width;
-      this.settings.slide_css_width = ((this.settings.slides_css_width / this.settings.amount_entries) /
-        this.settings.slides_css_width) * 100;
-
-      this.slides_width = this.settings.slides_css_width + '%';
-      this.slide_width = this.settings.slide_css_width + '%';
-
-      this.settings.images_css_width = this.images.length * 100;
-      this.settings.image_css_width = ((this.settings.images_css_width / this.images.length) /
-        this.settings.images_css_width) * 100;
-
-      this.images_width = this.settings.images_css_width + '%';
-      this.image_width = this.settings.image_css_width + '%';
-
       const self = this;
       const request = new XMLHttpRequest();
 
@@ -63,8 +49,12 @@ let app = new Vue({
           // Clear Vue data.
           self.entries = [];
 
-          // Populate the array with AMOUNT_ENTRIES latest entries.
-          for (let i = 0; i < self.settings.amount_entries; i++)
+          // Get today's date and set expiration constant
+          const TWO_WEEKS = (14 * 24 * 60 * 60 * 1000);
+          const today = new Date();
+
+          // Populate the array with latest entries.
+          for (let i = 0; i < entries.length; i++)
           {
             let title = entries[i].getElementsByTagName('title')[0].innerHTML;
             let content = entries[i].getElementsByTagName('content')[0].innerHTML;
@@ -86,8 +76,15 @@ let app = new Vue({
               content  : content
             };
 
-            self.entries.push(entry);
+            // Don't publish entries that are older than two weeks.
+            if (new Date(published).getTime() + TWO_WEEKS >= today.getTime())
+            {
+              self.entries.push(entry);
+              self.settings.amount_entries += 1;
+            }
           }
+
+          self.updateLayout();
 
           if (self.active)
           {
@@ -110,7 +107,7 @@ let app = new Vue({
             const bar = document.getElementsByClassName('bar')[0];
 
             let element = self.stage === 0 ? 'slides' : 'images';
-            let wrapper = document.getElementsByClassName(element)[0];
+            let wrapper = document.getElementById(element);
             let stage = self.stage === 0 ? 1 : 0;
 
             self.showOverlay();
@@ -134,6 +131,7 @@ let app = new Vue({
             }, 1100);
           }, self.settings.stage_interval * 1000);
 
+
           self.active = true;
         }
       };
@@ -150,13 +148,33 @@ let app = new Vue({
     }
     ,
     methods: {
+      updateLayout : function ()
+      {
+        this.settings.slides_css_width = (this.settings.amount_entries > 0) ? this.settings.amount_entries *
+          this.settings.slide_width : 100;
+        this.settings.slide_css_width = (this.settings.amount_entries > 0) ? ((this.settings.slides_css_width /
+          this.settings.amount_entries) /
+          this.settings.slides_css_width) * 100 : 100;
+
+        this.slides_width = this.settings.slides_css_width + '%';
+        this.slide_width = this.settings.slide_css_width + '%';
+
+        this.settings.images_css_width = this.images.length * 100;
+        this.settings.image_css_width = ((this.settings.images_css_width / this.images.length) /
+          this.settings.images_css_width) * 100;
+
+        this.images_width = this.settings.images_css_width + '%';
+        this.image_width = this.settings.image_css_width + '%';
+      },
       updateClock  : function ()
       {
         let current = new Date();
         let minutes = current.getMinutes();
         let hours = current.getHours();
-        if (minutes < 10) {minutes = '0' + minutes}
-        if (hours < 10) {hours = '0' + hours}
+
+        minutes = (minutes < 10) ? '0' + minutes : minutes;
+        hours = (hours < 10) ? '0' + hours : hours;
+
         this.time = (hours + ':' + minutes);
       },
       convertToHTML: function (message)
@@ -206,7 +224,7 @@ let app = new Vue({
           let element = self.stage === 0 ? 'slides' : 'images';
           let increment = self.stage === 0 ? self.settings.slide_css_width : self.settings.image_css_width;
 
-          let wrapper = document.getElementsByClassName(element)[0];
+          let wrapper = document.getElementById(element);
           self.startLoad(bar);
 
           if (i >= 100 - increment)
