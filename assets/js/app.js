@@ -27,7 +27,6 @@ let app = new Vue({
           'https://foo.kodstugan.io/images/2.jpg',
           'https://foo.kodstugan.io/images/Mpya_foo.jpg',
           'https://foo.kodstugan.io/images/wow2019.jpg'
-
         ]
     },
     mounted: function ()
@@ -227,7 +226,7 @@ let app = new Vue({
           let wrapper = document.getElementById(element);
           self.startLoad(bar);
 
-          if (i >= 100 - increment)
+          if (i + increment >= 100 - (increment / 2))
           {
             i = 0;
           }
