@@ -26,7 +26,6 @@ let app = new Vue({
         [
             'https://foo.kodstugan.io/images/2.jpg',
             'https://foo.kodstugan.io/images/wow2019.jpg'
-
         ]
     },
     mounted: function ()
