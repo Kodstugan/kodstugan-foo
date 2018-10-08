@@ -12,7 +12,10 @@
 <body>
 <div id="app">
   <div class="clock"> {{ time }}</div>
-  <div v-if="stage === 0" class="slides" v-bind:style="{ width: slides_width }">
+  <div v-if="stage === 0" id="slides" class="slides" v-bind:style="{ width: slides_width }">
+    <div class="alert" v-if="entries.length === 0">
+      <p>Inga nyheter hittades, kom tillbaka senare.</p>
+    </div>
     <div class="slide" v-for="entry in entries" v-bind:style="{ width: slide_width }">
       <h3 class="title">{{ entry.title }}</h3>
       <ul class="meta">
@@ -24,7 +27,7 @@
       </div>
     </div>
   </div>
-  <div class="images" v-if="stage === 1" v-bind:style="{ width: images_width }">
+  <div id="images" class="images" v-if="stage === 1" v-bind:style="{ width: images_width }">
     <div v-for="entry in images" v-bind:style="{ width: image_width }">
       <img :src="entry">
     </div>
