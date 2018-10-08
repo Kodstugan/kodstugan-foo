@@ -25,7 +25,6 @@ let app = new Vue({
       images      :
         [
             'https://foo.kodstugan.io/images/2.jpg',
-            'https://foo.kodstugan.io/images/Mpya_foo.jpg',
             'https://foo.kodstugan.io/images/wow2019.jpg'
 
         ]
