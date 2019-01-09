@@ -25,7 +25,8 @@ let app = new Vue({
       images      :
         [
             'https://foo.kodstugan.io/images/footv.jpg',
-            'https://foo.kodstugan.io/images/infodv.jpg'
+            'https://foo.kodstugan.io/images/infodv.jpg',
+            'https://foo.kodstugan.io/images/ericsson_buss.jpg'
         ]
     },
     mounted: function ()
