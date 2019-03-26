@@ -64,6 +64,9 @@ let app = new Vue({
             // XML feed content is using &lt, &gt, &amp instead of correct HTML tags.
             title = self.convertToHTML(title);
             content = self.convertToHTML(content);
+              
+            // Temporary solution for external images, this assumes that images are local on the remote host.
+            content = content.replace(/\/images\//g, 'https://www.datavetenskap.nu/images/');
 
             // Convert to correct date format.
             published = new Date(published).toLocaleDateString('sv-SE').toString();
