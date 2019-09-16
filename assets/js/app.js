@@ -27,7 +27,7 @@ let app = new Vue({
             'https://foo.kodstugan.io/images/footv.jpg',
             'https://foo.kodstugan.io/images/infodv.jpg',
             'https://foo.kodstugan.io/images/fotboll.png',
-            'https://foo.kodstugan.io/images/faddersok.png'
+            'https://foo.kodstugan.io/images/am-volleyboll.png'
         ]
     },
     mounted: function ()
