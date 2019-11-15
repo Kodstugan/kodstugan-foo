@@ -27,6 +27,8 @@ let app = new Vue({
             'https://foo.kodstugan.io/images/footv.jpg',
             'https://foo.kodstugan.io/images/infodv.jpg',
             'https://foo.kodstugan.io/images/hostmote.jpg',
+            'https://foo.kodstugan.io/images/traning.png',
+            'https://foo.kodstugan.io/images/ultimate.png',
             'https://foo.kodstugan.io/images/kodstuganad.jpg'
         ]
     },
